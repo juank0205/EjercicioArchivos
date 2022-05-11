@@ -1,0 +1,5 @@
+{
+	"nombre:": "Carlos",
+	"matricula": 987,
+	"edad": 9
+}
