@@ -9,7 +9,7 @@ void menu(Estudiante& estudiante, Estudiante& lectura, int& cantidadEstudiantes)
     int op;
     do{
         cout << "MENU ARCHIVOS" << endl;
-        cout << "1. Crear carchivo\n2. Agregar estudiante\n3. Mostrar estudiantes\n4. Buscar estudiante\n5. Buscar por edad\n6. Eliminar registro\n";
+        cout << "1. Crear carchivo\n2. Agregar estudiante\n3. Mostrar estudiantes\n4. Buscar estudiante\n5. Buscar por edad\n6. Eliminar registro\n7. Edades mas 50\n8. Editar matricula\n";
         cout << "Ingrese la opcion: ";
         cin >> op;
         system("cls");
@@ -21,6 +21,7 @@ void menu(Estudiante& estudiante, Estudiante& lectura, int& cantidadEstudiantes)
             break;
         case 2:
             cantidadEstudiantes++;
+            actualizarCantidad(cantidadEstudiantes);
             crearEstudiante(estudiante);
             break;
         case 3:
@@ -34,6 +35,14 @@ void menu(Estudiante& estudiante, Estudiante& lectura, int& cantidadEstudiantes)
             break;
         case 6:
             eliminarRegistro(lectura, cantidadEstudiantes);
+            actualizarCantidad(cantidadEstudiantes);
+            break;
+        case 7:
+            edadesMas50(lectura, cantidadEstudiantes);
+            break;
+        case 8:
+            mostrarRegistros(lectura, cantidadEstudiantes);
+            editarMatricula(lectura, cantidadEstudiantes);
             break;
         case 0:
             cout << "Adios" << endl;
@@ -50,6 +59,7 @@ int main()
     Estudiante estudiante;
     Estudiante lectura;
     int cantidadEstudiantes=0;
+    inicCantidad(cantidadEstudiantes);
     menu(estudiante, lectura, cantidadEstudiantes);
 
     system("pause");

@@ -1,13 +1,37 @@
 #include <iostream>
+#include <filesystem>
 #include "Estudiante.h"
 using namespace std;
+using std::filesystem::exists;
 
 const char* FORMATO_ESTUDIANTE_IN = "{\n\t\"nombre:\": \"%s\",\n\t\"matricula\": %d,\n\t\"edad\": %d\n}\n";
 const char* FORMATO_ESTUDIANTE_OUT = "{\n\t\"nombre:\": \"%[^\"]\",\n\t\"matricula\": %d,\n\t\"edad\": %d\n}\n";
+const char* FORMATO_CANTIDAD = "{\n\t\"cantidad\": %d\n}\n";
 FILE *file;
+FILE *fileCantidad;
 
+void inicCantidad(int &cantidadEstudiantes){
+    if (exists("cantidad.txt")){
+        fopen_s(&fileCantidad, "cantidad.txt", "r+");
+        fscanf_s(fileCantidad, FORMATO_CANTIDAD, &cantidadEstudiantes);
+        fclose(fileCantidad);
+    }else{
+        fopen_s(&fileCantidad, "cantidad.txt", "w+");
+        fscanf_s(fileCantidad, FORMATO_CANTIDAD, &cantidadEstudiantes);
+        fclose(fileCantidad);
+    }
+}
+void actualizarCantidad(int &cantidadEstudiantes){
+    fopen_s(&fileCantidad, "cantidad.txt", "w+");
+    fprintf_s(fileCantidad, FORMATO_CANTIDAD, cantidadEstudiantes);
+    fclose(fileCantidad);
+}
 void crearArchivo(){
-    fopen_s(&file, "estudiantes.txt", "w+");
+   if (exists("estudiantes.txt")){
+       fopen_s(&file, "estudiantes.txt", "at+");
+   }else{
+        fopen_s(&file, "estudiantes.txt", "w+");
+   }
 }
 void crearEstudiante(Estudiante& estudiante){
     cout << "Ingrese el nombre del estudiante: ";
@@ -90,5 +114,57 @@ void eliminarRegistro(Estudiante &lectura, int& cantidadEstudiantes){
     fclose(file2);
     remove("estudiantes2.txt");
 
+    mostrarRegistros(lectura, cantidadEstudiantes);
+}
+void edadesMas50(Estudiante& lectura, int cantidadEstudiantes){
+    FILE *file2;
+    fopen_s(&file2, "Estudiantes2.txt", "w+");
+    for (int i=0; i<cantidadEstudiantes; i++){
+        fscanf_s(file, FORMATO_ESTUDIANTE_OUT, lectura.nombre, 30, &lectura.matricula, &lectura.edad);
+        lectura.edad += 50;
+        fprintf_s(file2, FORMATO_ESTUDIANTE_IN, lectura.nombre, lectura.matricula, lectura.edad);
+    }
+    fclose(file);
+    remove("estudiantes.txt");
+    fopen_s(&file, "estudiantes.txt", "w+");
+    fseek(file2, 0, SEEK_SET);
+    for (int i=0; i<cantidadEstudiantes; i++){
+        fscanf_s(file2, FORMATO_ESTUDIANTE_OUT, lectura.nombre, 30, &lectura.matricula, &lectura.edad);
+        fprintf_s(file, FORMATO_ESTUDIANTE_IN, lectura.nombre, lectura.matricula, lectura.edad);
+    }
+    fclose(file2);
+    remove("estudiantes2.txt");
+
+    cout << "EDADES MAS 50" << endl;
+    mostrarRegistros(lectura, cantidadEstudiantes);
+}
+void editarMatricula(Estudiante& lectura, int cantidadEstudiantes){
+    int matricula;
+    cout << "Ingresar matricula a editar: ";
+    cin >> matricula;
+    FILE *file2;
+    fopen_s(&file2, "Estudiantes2.txt", "w+");
+    for (int i=0; i<cantidadEstudiantes; i++){
+        fscanf_s(file, FORMATO_ESTUDIANTE_OUT, lectura.nombre, 30, &lectura.matricula, &lectura.edad);
+        if (lectura.matricula == matricula){
+            cout << "Ingrese el nuevo nombre: ";
+            fflush(stdin);
+            gets(lectura.nombre);
+            cout << "Ingrese la nueva edad: ";
+            fflush(stdin);
+            cin >> lectura.edad;
+        }
+        fprintf_s(file2, FORMATO_ESTUDIANTE_IN, lectura.nombre, lectura.matricula, lectura.edad);
+    }
+    fclose(file);
+    remove("estudiantes.txt");
+    fopen_s(&file, "estudiantes.txt", "w+");
+    fseek(file2, 0, SEEK_SET);
+    for (int i=0; i<cantidadEstudiantes; i++){
+        fscanf_s(file2, FORMATO_ESTUDIANTE_OUT, lectura.nombre, 30, &lectura.matricula, &lectura.edad);
+        fprintf_s(file, FORMATO_ESTUDIANTE_IN, lectura.nombre, lectura.matricula, lectura.edad);
+    }
+    fclose(file2);
+    remove("estudiantes2.txt");
     mostrarRegistros(lectura, cantidadEstudiantes);
 }
